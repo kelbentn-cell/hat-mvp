@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="hat-api-base" content="" />
+  <title>HAT — Human Authentication Token</title>
+  <link rel="stylesheet" href="styles.css?v=7" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+  <div class="grid-overlay" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a href="#" class="logo">HAT</a>
+    <nav class="nav-links">
+      <a href="#context">Context</a>
+      <a href="#how">How It Works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#verify">Verify</a>
+      <a href="#certificate">Certificate</a>
+    </nav>
+    <a class="btn btn-small" data-checkout="default">Get token</a>
+  </header>
+
+  <main>
+    <section class="hero reveal">
+      <div class="hero-copy">
+        <p class="eyebrow">Human Authentication Token</p>
+        <h1>Attach proof of personhood to every public sentence.</h1>
+        <p class="tagline">Human provenance for the agent era.</p>
+        <p class="lede">
+          We are entering a feed where human and synthetic text look identical. HAT gives you a portable human-authentication token,
+          like <strong>HAT-000001</strong>, that you paste at the end of any post. No lock-in. No fragile integrations. Just verifiable provenance.
+        </p>
+        <div class="hero-actions">
+          <a class="btn" data-checkout="default">Get a token</a>
+          <a class="btn btn-ghost" href="#verify">Verify token</a>
+        </div>
+        <div class="use-anywhere">
+          <span>Use it anywhere:</span>
+          <div class="chips">
+            <span>Reddit</span>
+            <span>X</span>
+            <span>Blogs</span>
+            <span>Newsletters</span>
+            <span>Forums</span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="hero-panel reveal">
+        <div class="panel-topline">Live trust layer</div>
+        <div class="token-pill">HAT-000001</div>
+        <h3>Human-authenticated output.</h3>
+        <p>Private issuance log. Public verification. Identity private by default. Optional display name for EUR <span data-name-addon>5</span>.</p>
+
+        <div class="hero-metrics">
+          <div>
+            <span class="metric-label">Issuance</span>
+            <span class="metric-value">Automatic</span>
+          </div>
+          <div>
+            <span class="metric-label">Uniqueness</span>
+            <span class="metric-value">Sequential</span>
+          </div>
+          <div>
+            <span class="metric-label">Scope</span>
+            <span class="metric-value">Platform-agnostic</span>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="ticker" aria-hidden="true">
+      <div class="ticker-track" id="ticker-track">
+        <span>HAT-000001 issued</span>
+        <span>Human-authenticated statement</span>
+        <span>Portable across all platforms</span>
+        <span>HAT-000002 issued</span>
+        <span>Agent-heavy feeds demand proof</span>
+        <span>Private log, public verification</span>
+        <span>HAT-000003 issued</span>
+        <span>Paste once, verify anywhere</span>
+        <span>HAT-000004 issued</span>
+      </div>
+    </section>
+
+    <section id="context" class="section narrative reveal">
+      <div class="section-header">
+        <p class="eyebrow">Why now</p>
+        <h2>The social web is entering a provenance crisis.</h2>
+      </div>
+
+      <div class="context-grid">
+        <article class="context-card">
+          <h3>1. Agent output is scaling faster than trust signals</h3>
+          <p>Generation costs are collapsing and posting automation is rising. Readers now need lightweight proof that a specific message originated from a person.</p>
+        </article>
+        <article class="context-card">
+          <h3>2. Identity should not require surveillance</h3>
+          <p>HAT verifies issuance without exposing legal identity. You get proof of human authorship while staying private by default.</p>
+        </article>
+        <article class="context-card">
+          <h3>3. Trust must be portable</h3>
+          <p>If trust only works inside one app, it fails on the open web. HAT travels with your text across platforms and communities.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="how" class="section reveal">
+      <div class="section-header">
+        <p class="eyebrow">How it works</p>
+        <h2>Three steps, no platform dependency.</h2>
+      </div>
+
+      <div class="grid three">
+        <article class="card step-card">
+          <span class="step-index">01</span>
+          <h3>Buy your token</h3>
+          <p>Payment triggers automatic issuance. Every order maps to one unique sequential HAT ID.</p>
+        </article>
+        <article class="card step-card">
+          <span class="step-index">02</span>
+          <h3>Paste it anywhere</h3>
+          <p>Add your token to any post footer, thread reply, article, or newsletter issue.</p>
+        </article>
+        <article class="card step-card">
+          <span class="step-index">03</span>
+          <h3>Let anyone verify</h3>
+          <p>The public endpoint confirms token validity and issuance timestamp without exposing private identity.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="pricing" class="section pricing reveal">
+      <div class="section-header">
+        <p class="eyebrow">Pricing</p>
+        <h2>Own your number in the provenance ledger.</h2>
+        <p class="subtext">Lower IDs are scarce and culturally significant. Standard IDs stay accessible for broad adoption.</p>
+      </div>
+
+      <div class="grid pricing-grid">
+        <article class="price-card highlight">
+          <div class="badge">Founders</div>
+          <h3>HAT #1-10</h3>
+          <p class="price">EUR 20k</p>
+          <ul>
+            <li>Founders highlight (optional)</li>
+            <li>Priority issuance</li>
+            <li>Name add-on included</li>
+            <li>Private log + public verification</li>
+          </ul>
+          <a class="btn" data-checkout="founders">Get token</a>
+        </article>
+
+        <article class="price-card premium">
+          <div class="badge">Elite</div>
+          <h3>HAT #11-20</h3>
+          <p class="price">EUR 5k</p>
+          <ul>
+            <li>Low token number</li>
+            <li>Fast issuance</li>
+            <li>Name add-on included</li>
+            <li>Private log + public verification</li>
+          </ul>
+          <a class="btn" data-checkout="elite">Get token</a>
+        </article>
+
+        <article class="price-card">
+          <h3>HAT #21-50</h3>
+          <p class="price">EUR 1k</p>
+          <ul>
+            <li>Early token</li>
+            <li>Instant issuance</li>
+            <li>Optional name add-on</li>
+            <li>Private log + public verification</li>
+          </ul>
+          <a class="btn" data-checkout="early">Get token</a>
+        </article>
+
+        <article class="price-card">
+          <h3>HAT #51-100</h3>
+          <p class="price">EUR 0.5k</p>
+          <ul>
+            <li>Mid-range token</li>
+            <li>Instant issuance</li>
+            <li>Optional name add-on</li>
+            <li>Private log + public verification</li>
+          </ul>
+          <a class="btn" data-checkout="mid">Get token</a>
+        </article>
+
+        <article class="price-card wide">
+          <div class="badge badge-soft">Updated</div>
+          <h3>HAT #101+</h3>
+          <p class="price">EUR <span data-standard-price>3</span></p>
+          <ul>
+            <li>Standard token</li>
+            <li>Instant issuance</li>
+            <li>Optional name add-on</li>
+            <li>Private log + public verification</li>
+          </ul>
+          <a class="btn" data-checkout="standard">Get token</a>
+        </article>
+      </div>
+    </section>
+
+    <section id="verify" class="section verify reveal">
+      <div class="section-header">
+        <p class="eyebrow">Verify token</p>
+        <h2>Check provenance in one request.</h2>
+        <p class="subtext">Any user can validate token existence and issuance time through a public endpoint.</p>
+      </div>
+
+      <form id="verify-form" class="verify-form">
+        <input type="text" name="token" placeholder="HAT-000001" autocomplete="off" />
+        <button class="btn" type="submit">Verify</button>
+      </form>
+      <div id="verify-result" class="verify-result" aria-live="polite"></div>
+    </section>
+
+    <section id="certificate" class="section verify reveal">
+      <div class="section-header">
+        <p class="eyebrow">Private certificate</p>
+        <h2>Issue your private HAT certificate.</h2>
+        <p class="subtext">Enter the purchase order ID and purchase email to retrieve a private certificate with your HAT number and private user identifier.</p>
+      </div>
+
+      <form id="certificate-form" class="verify-form">
+        <input type="text" name="orderId" placeholder="Order ID" autocomplete="off" />
+        <input type="email" name="email" placeholder="Purchase email" autocomplete="off" />
+        <button class="btn" type="submit">Get certificate</button>
+      </form>
+      <div id="certificate-result" class="verify-result" aria-live="polite"></div>
+
+      <article id="certificate-card" class="certificate-card" hidden>
+        <header class="certificate-head">
+          <p class="certificate-label">Human Authentication Certificate</p>
+          <p class="certificate-number">Certificate: <span data-cert-number></span></p>
+        </header>
+        <div class="certificate-body">
+          <h3>Certificate of Human-Origin Attestation</h3>
+          <p>This certifies that the holder of token <strong data-cert-token></strong> has been issued a unique private human identifier in the HAT registry.</p>
+          <div class="certificate-grid">
+            <div>
+              <span>Private User Identifier</span>
+              <strong data-cert-user-id></strong>
+            </div>
+            <div>
+              <span>Issued At</span>
+              <strong data-cert-issued></strong>
+            </div>
+            <div>
+              <span>Display Name</span>
+              <strong data-cert-name></strong>
+            </div>
+          </div>
+        </div>
+        <footer class="certificate-foot">
+          <button class="btn" type="button" id="certificate-download">Download PDF</button>
+          <button class="btn btn-ghost" type="button" id="certificate-print">Open print view</button>
+        </footer>
+      </article>
+    </section>
+
+    <section id="why" class="section reveal">
+      <div class="section-header">
+        <p class="eyebrow">Why HAT</p>
+        <h2>Trust that scales with open distribution.</h2>
+      </div>
+
+      <div class="grid three">
+        <article class="card">
+          <h3>Portable by design</h3>
+          <p>The token is attached to text, not to a platform account, so your trust signal follows your work everywhere.</p>
+        </article>
+        <article class="card">
+          <h3>Grounded, not performative</h3>
+          <p>Verification checks against a real issuance record instead of unverifiable claims in profile bios.</p>
+        </article>
+        <article class="card">
+          <h3>Low-friction adoption</h3>
+          <p>No plugins and no integration complexity. Paste token, publish, and let readers verify.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>HAT: private issuance log, public proof, portable human-authentication.</p>
+  </footer>
+
+  <script src="app.js?v=7"></script>
+</body>
+</html>

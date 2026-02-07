@@ -1,0 +1,17 @@
+{
+  "name": "hat-mvp",
+  "version": "1.0.0",
+  "description": "HAT (Human Authentication Token) MVP landing + backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.14.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "pdfkit": "^0.17.2",
+    "sqlite3": "^5.1.7"
+  }
+}
