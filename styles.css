@@ -453,6 +453,7 @@ h1 {
 .price-card {
   --parallax-x: 0px;
   --parallax-y: 0px;
+  --tier-accent: var(--amber-deep);
   border-radius: 22px;
   padding: 24px;
   background: rgba(255, 255, 255, 0.86);
@@ -472,13 +473,33 @@ h1 {
 }
 
 .price-card.highlight {
+  --tier-accent: #d37b1e;
   background: linear-gradient(165deg, rgba(255, 255, 255, 0.94), rgba(243, 167, 66, 0.25));
   border-color: rgba(211, 123, 30, 0.35);
 }
 
 .price-card.premium {
+  --tier-accent: #4d79a8;
   background: linear-gradient(165deg, rgba(255, 255, 255, 0.94), rgba(141, 185, 232, 0.25));
   border-color: rgba(101, 147, 196, 0.36);
+}
+
+.price-card.tier-early {
+  --tier-accent: #2f9076;
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.94), rgba(152, 215, 199, 0.30));
+  border-color: rgba(71, 159, 133, 0.35);
+}
+
+.price-card.tier-mid {
+  --tier-accent: #955a17;
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.94), rgba(243, 167, 66, 0.20), rgba(255, 239, 210, 0.55));
+  border-color: rgba(174, 108, 32, 0.34);
+}
+
+.price-card.tier-standard {
+  --tier-accent: #2b6f67;
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.94), rgba(186, 226, 217, 0.35));
+  border-color: rgba(80, 137, 125, 0.35);
 }
 
 .price-card.wide {
@@ -513,7 +534,7 @@ h1 {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--amber-deep);
+  background: var(--tier-accent);
 }
 
 .price-note {

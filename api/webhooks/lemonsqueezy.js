@@ -4,7 +4,9 @@ const {
   formatCertificateNumber,
   formatToken,
   generateUserIdentifier,
+  getNextTokenNumberForTier,
   readRawBody,
+  resolveTierFromPayload,
   verifyWebhookSignature
 } = require('../../lib/hat');
 
@@ -31,6 +33,7 @@ module.exports = async (req, res) => {
   }
 
   const { orderId, orderNumber, email, name } = extractWebhookFields(payload);
+  const tier = resolveTierFromPayload(payload);
 
   if (!orderId) {
     return res.status(400).json({ error: 'Missing order id' });
@@ -58,7 +61,14 @@ module.exports = async (req, res) => {
         return res.status(500).json({ error: 'Database error' });
       }
     }
-    return res.json({ ok: true, duplicate: true, token: existing.token, name: existing.name, created_at: existing.created_at });
+    return res.json({
+      ok: true,
+      duplicate: true,
+      token: existing.token,
+      name: existing.name,
+      created_at: existing.created_at,
+      tier
+    });
   }
 
   const createdAt = new Date().toISOString();
@@ -103,7 +113,14 @@ module.exports = async (req, res) => {
                 return res.status(500).json({ error: 'Database error' });
               }
             }
-            return res.json({ ok: true, duplicate: true, token: dupRow.token, name: dupRow.name, created_at: dupRow.created_at });
+            return res.json({
+              ok: true,
+              duplicate: true,
+              token: dupRow.token,
+              name: dupRow.name,
+              created_at: dupRow.created_at,
+              tier
+            });
           }
         } catch (dupErr) {
           return res.status(500).json({ error: 'Database error' });
@@ -124,20 +141,41 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: 'Database error' });
   }
 
-  const token = formatToken(inserted.id);
   const certificateNumber = formatCertificateNumber(inserted.id);
-  try {
-    await client.execute({
-      sql: 'UPDATE tokens SET token = ?, certificate_number = ? WHERE id = ?',
-      args: [token, certificateNumber, inserted.id]
-    });
-  } catch (err) {
-    return res.status(500).json({ error: 'Database error' });
+  let token = null;
+  let issuedTokenNumber = null;
+  let assigned = false;
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    try {
+      issuedTokenNumber = await getNextTokenNumberForTier(client, tier);
+      token = formatToken(issuedTokenNumber);
+      await client.execute({
+        sql: 'UPDATE tokens SET token = ?, certificate_number = ? WHERE id = ?',
+        args: [token, certificateNumber, inserted.id]
+      });
+      assigned = true;
+      break;
+    } catch (err) {
+      if (err && err.code === 'TIER_SOLD_OUT') {
+        return res.status(409).json({ error: `Tier ${tier} is sold out` });
+      }
+      const message = String(err.message || '');
+      if (message.includes('tokens.token') || message.includes('idx_tokens_token')) {
+        continue;
+      }
+      return res.status(500).json({ error: 'Database error' });
+    }
+  }
+
+  if (!assigned || !token) {
+    return res.status(500).json({ error: 'Could not allocate token number' });
   }
 
   return res.json({
     ok: true,
     token,
+    token_number: issuedTokenNumber,
+    tier,
     name: inserted.name,
     created_at: inserted.created_at,
     certificate_number: certificateNumber,
