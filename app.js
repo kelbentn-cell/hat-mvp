@@ -1,5 +1,4 @@
 const checkoutButtons = document.querySelectorAll('[data-checkout]');
-const nameAddonTargets = document.querySelectorAll('[data-name-addon]');
 const standardPriceTargets = document.querySelectorAll('[data-standard-price]');
 
 const apiBase = (() => {
@@ -14,19 +13,6 @@ function apiUrl(path) {
   return apiBase ? `${apiBase}${path}` : path;
 }
 
-function buildCheckoutUrlWithDisplayName(baseUrl, displayName) {
-  try {
-    const url = new URL(baseUrl, window.location.origin);
-    url.searchParams.set('checkout[custom][display_name]', displayName);
-    url.searchParams.set('checkout[custom][name]', displayName);
-    return url.toString();
-  } catch (err) {
-    const joiner = baseUrl.includes('?') ? '&' : '?';
-    const encoded = encodeURIComponent(displayName);
-    return `${baseUrl}${joiner}checkout%5Bcustom%5D%5Bdisplay_name%5D=${encoded}&checkout%5Bcustom%5D%5Bname%5D=${encoded}`;
-  }
-}
-
 async function loadConfig() {
   try {
     const res = await fetch(apiUrl('/api/config'));
@@ -34,12 +20,7 @@ async function loadConfig() {
     const checkoutUrl = (data.checkoutUrl || '').trim();
     const checkoutUrls = data.checkoutUrls || {};
     const foundersContactUrl = (data.foundersContactUrl || '').trim();
-    const nameAddonPrice = Number.isFinite(Number(data.nameAddonPrice)) ? Number(data.nameAddonPrice) : 5;
     const standardPrice = Number.isFinite(Number(data.standardPrice)) ? Number(data.standardPrice) : 3;
-
-    nameAddonTargets.forEach((el) => {
-      el.textContent = nameAddonPrice.toString();
-    });
 
     standardPriceTargets.forEach((el) => {
       el.textContent = standardPrice.toString();
@@ -47,15 +28,12 @@ async function loadConfig() {
 
     checkoutButtons.forEach((btn) => {
       const tier = (btn.dataset.checkout || 'default').toLowerCase();
-      const fallbackUrl = tier === 'standard_addon'
-        ? (checkoutUrls.standard_addon || '').trim()
-        : (checkoutUrls[tier] || checkoutUrls.default || checkoutUrl || '').trim();
+      const fallbackUrl = (checkoutUrls[tier] || checkoutUrls.default || checkoutUrl || '').trim();
       const tierUrl = tier === 'founders' && foundersContactUrl ? foundersContactUrl : fallbackUrl;
       const opensInNewTab = /^https?:\/\//i.test(tierUrl);
 
       if (tierUrl) {
         btn.href = tierUrl;
-        btn.dataset.baseUrl = tierUrl;
         if (opensInNewTab) {
           btn.target = '_blank';
           btn.rel = 'noopener';
@@ -75,42 +53,6 @@ async function loadConfig() {
       btn.classList.add('is-disabled');
     });
   }
-}
-
-function initNameAddonCheckout() {
-  const nameInput = document.querySelector('[data-display-name-input]');
-  const feedback = document.querySelector('[data-display-name-feedback]');
-  const nameCheckoutButtons = document.querySelectorAll('[data-checkout-requires-name="true"]');
-
-  if (!nameInput || !nameCheckoutButtons.length) return;
-
-  const clearFeedback = () => {
-    if (feedback) feedback.textContent = '';
-  };
-
-  nameInput.addEventListener('input', clearFeedback);
-
-  nameCheckoutButtons.forEach((btn) => {
-    btn.addEventListener('click', (event) => {
-      const baseUrl = (btn.dataset.baseUrl || btn.getAttribute('href') || '').trim();
-      if (!baseUrl || baseUrl === '#') {
-        return;
-      }
-
-      const displayName = nameInput.value.trim();
-      if (!displayName) {
-        event.preventDefault();
-        if (feedback) {
-          feedback.textContent = 'Enter display name before using name add-on checkout.';
-        }
-        nameInput.focus();
-        return;
-      }
-
-      btn.href = buildCheckoutUrlWithDisplayName(baseUrl, displayName);
-      clearFeedback();
-    });
-  });
 }
 
 function initVerifyForm() {
@@ -486,9 +428,7 @@ function initCanvas() {
   draw(0);
 }
 
-loadConfig().finally(() => {
-  initNameAddonCheckout();
-});
+loadConfig();
 initVerifyForm();
 initCertificateForm();
 initTicker();

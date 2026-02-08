@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="hat-api-base" content="" />
   <title>HAT — Human Authentication Token</title>
-  <link rel="stylesheet" href="styles.css?v=10" />
+  <link rel="stylesheet" href="styles.css?v=11" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -56,7 +56,7 @@
         <div class="panel-topline">Live trust layer</div>
         <div class="token-pill">HAT-000001</div>
         <h3>Human-authenticated output.</h3>
-        <p>Private issuance log. Public verification. Identity private by default. Display name add-on is EUR <span data-name-addon>5</span> on standard tier, included on higher tiers.</p>
+        <p>Private issuance log. Public verification. Identity stays private by default. Display name is available for founders tier.</p>
 
         <div class="hero-metrics">
           <div>
@@ -166,7 +166,7 @@
           <ul>
             <li>Low token number</li>
             <li>Fast issuance</li>
-            <li>Name add-on included</li>
+            <li>Identity private by default</li>
             <li>Private log + public verification</li>
           </ul>
           <a class="btn" data-checkout="elite">Get token</a>
@@ -178,7 +178,7 @@
           <ul>
             <li>Early token</li>
             <li>Instant issuance</li>
-            <li>Name add-on included</li>
+            <li>Identity private by default</li>
             <li>Private log + public verification</li>
           </ul>
           <a class="btn" data-checkout="early">Get token</a>
@@ -190,7 +190,7 @@
           <ul>
             <li>Mid-range token</li>
             <li>Instant issuance</li>
-            <li>Name add-on included</li>
+            <li>Identity private by default</li>
             <li>Private log + public verification</li>
           </ul>
           <a class="btn" data-checkout="mid">Get token</a>
@@ -203,26 +203,10 @@
           <ul>
             <li>Standard token</li>
             <li>Instant issuance</li>
-            <li>Name add-on (+EUR <span data-name-addon>5</span>)</li>
+            <li>Identity private by default</li>
             <li>Private log + public verification</li>
           </ul>
-          <div class="tier-name-block">
-            <label class="tier-name-label" for="standard-addon-display-name">Display name for certificate</label>
-            <input
-              id="standard-addon-display-name"
-              class="tier-name-input"
-              type="text"
-              maxlength="60"
-              placeholder="Enter display name"
-              data-display-name-input
-              autocomplete="off"
-            />
-            <p class="tier-name-help" data-display-name-feedback></p>
-          </div>
-          <div class="tier-actions">
-            <a class="btn" data-checkout="standard">Get token</a>
-            <a class="btn btn-ghost" data-checkout="standard_addon" data-checkout-requires-name="true">Get token + name add-on</a>
-          </div>
+          <a class="btn" data-checkout="standard">Get token</a>
         </article>
       </div>
     </section>
@@ -312,6 +296,6 @@
     <p>HAT: private issuance log, public proof, portable human-authentication.</p>
   </footer>
 
-  <script src="app.js?v=10"></script>
+  <script src="app.js?v=11"></script>
 </body>
 </html>

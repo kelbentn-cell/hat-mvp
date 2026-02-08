@@ -77,7 +77,7 @@ module.exports = async (req, res) => {
       name: existing.name,
       created_at: existing.created_at,
       tier,
-      name_addon_paid: tier === 'standard' ? resolvedName.nameAddonPaid : true
+      name_addon_paid: resolvedName.nameAddonPaid
     });
   }
 
@@ -134,7 +134,7 @@ module.exports = async (req, res) => {
               name: dupRow.name,
               created_at: dupRow.created_at,
               tier,
-              name_addon_paid: tier === 'standard' ? resolvedName.nameAddonPaid : true
+              name_addon_paid: resolvedName.nameAddonPaid
             });
           }
         } catch (dupErr) {
@@ -191,7 +191,7 @@ module.exports = async (req, res) => {
     token,
     token_number: issuedTokenNumber,
     tier,
-    name_addon_paid: tier === 'standard' ? resolvedName.nameAddonPaid : true,
+    name_addon_paid: resolvedName.nameAddonPaid,
     name: inserted.name,
     created_at: inserted.created_at,
     certificate_number: certificateNumber,
