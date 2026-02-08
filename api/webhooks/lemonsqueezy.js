@@ -6,6 +6,7 @@ const {
   generateUserIdentifier,
   getNextTokenNumberForTier,
   readRawBody,
+  resolveDisplayNameForTier,
   resolveTierFromPayload,
   verifyWebhookSignature
 } = require('../../lib/hat');
@@ -34,9 +35,13 @@ module.exports = async (req, res) => {
 
   const { orderId, orderNumber, email, name } = extractWebhookFields(payload);
   const tier = resolveTierFromPayload(payload);
+  const resolvedName = resolveDisplayNameForTier(payload, tier, name);
 
   if (!orderId) {
     return res.status(400).json({ error: 'Missing order id' });
+  }
+  if (!tier) {
+    return res.status(400).json({ error: 'Unable to resolve tier for this order' });
   }
 
   let existing;
@@ -67,7 +72,8 @@ module.exports = async (req, res) => {
       token: existing.token,
       name: existing.name,
       created_at: existing.created_at,
-      tier
+      tier,
+      name_addon_paid: tier === 'standard' ? resolvedName.nameAddonPaid : true
     });
   }
 
@@ -79,7 +85,7 @@ module.exports = async (req, res) => {
     try {
       const insertResult = await client.execute({
         sql: 'INSERT INTO tokens (token, name, order_id, order_number, email, created_at, user_identifier, certificate_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id, name, created_at, user_identifier',
-        args: [null, name, orderId, orderNumber, email, createdAt, userIdentifier, null]
+        args: [null, resolvedName.name, orderId, orderNumber, email, createdAt, userIdentifier, null]
       });
       inserted = insertResult.rows && insertResult.rows.length ? insertResult.rows[0] : null;
       insertError = null;
@@ -119,7 +125,8 @@ module.exports = async (req, res) => {
               token: dupRow.token,
               name: dupRow.name,
               created_at: dupRow.created_at,
-              tier
+              tier,
+              name_addon_paid: tier === 'standard' ? resolvedName.nameAddonPaid : true
             });
           }
         } catch (dupErr) {
@@ -176,6 +183,7 @@ module.exports = async (req, res) => {
     token,
     token_number: issuedTokenNumber,
     tier,
+    name_addon_paid: tier === 'standard' ? resolvedName.nameAddonPaid : true,
     name: inserted.name,
     created_at: inserted.created_at,
     certificate_number: certificateNumber,
