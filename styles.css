@@ -551,6 +551,41 @@ h1 {
   align-items: center;
 }
 
+.tier-name-block {
+  display: grid;
+  gap: 7px;
+}
+
+.tier-name-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  font-weight: 700;
+}
+
+.tier-name-input {
+  min-height: 42px;
+  border-radius: 12px;
+  border: 1px solid var(--stroke-strong);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--ink);
+  padding: 9px 12px;
+  font-size: 0.96rem;
+}
+
+.tier-name-input:focus {
+  outline: 2px solid rgba(141, 185, 232, 0.45);
+  outline-offset: 1px;
+}
+
+.tier-name-help {
+  min-height: 18px;
+  margin: 0;
+  font-size: 0.82rem;
+  color: #8a3326;
+}
+
 .badge {
   position: absolute;
   top: -11px;

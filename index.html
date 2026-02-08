@@ -206,9 +206,22 @@
             <li>Name add-on (+EUR <span data-name-addon>5</span>)</li>
             <li>Private log + public verification</li>
           </ul>
+          <div class="tier-name-block">
+            <label class="tier-name-label" for="standard-addon-display-name">Display name for certificate</label>
+            <input
+              id="standard-addon-display-name"
+              class="tier-name-input"
+              type="text"
+              maxlength="60"
+              placeholder="Enter display name"
+              data-display-name-input
+              autocomplete="off"
+            />
+            <p class="tier-name-help" data-display-name-feedback></p>
+          </div>
           <div class="tier-actions">
             <a class="btn" data-checkout="standard">Get token</a>
-            <a class="btn btn-ghost" data-checkout="standard_addon">Get token + name add-on</a>
+            <a class="btn btn-ghost" data-checkout="standard_addon" data-checkout-requires-name="true">Get token + name add-on</a>
           </div>
         </article>
       </div>
@@ -299,6 +312,6 @@
     <p>HAT: private issuance log, public proof, portable human-authentication.</p>
   </footer>
 
-  <script src="app.js?v=9"></script>
+  <script src="app.js?v=10"></script>
 </body>
 </html>

@@ -14,6 +14,17 @@ function apiUrl(path) {
   return apiBase ? `${apiBase}${path}` : path;
 }
 
+function buildCheckoutUrlWithDisplayName(baseUrl, displayName) {
+  try {
+    const url = new URL(baseUrl, window.location.origin);
+    url.searchParams.set('checkout[custom][display_name]', displayName);
+    return url.toString();
+  } catch (err) {
+    const joiner = baseUrl.includes('?') ? '&' : '?';
+    return `${baseUrl}${joiner}checkout%5Bcustom%5D%5Bdisplay_name%5D=${encodeURIComponent(displayName)}`;
+  }
+}
+
 async function loadConfig() {
   try {
     const res = await fetch(apiUrl('/api/config'));
@@ -42,6 +53,7 @@ async function loadConfig() {
 
       if (tierUrl) {
         btn.href = tierUrl;
+        btn.dataset.baseUrl = tierUrl;
         if (opensInNewTab) {
           btn.target = '_blank';
           btn.rel = 'noopener';
@@ -61,6 +73,42 @@ async function loadConfig() {
       btn.classList.add('is-disabled');
     });
   }
+}
+
+function initNameAddonCheckout() {
+  const nameInput = document.querySelector('[data-display-name-input]');
+  const feedback = document.querySelector('[data-display-name-feedback]');
+  const nameCheckoutButtons = document.querySelectorAll('[data-checkout-requires-name="true"]');
+
+  if (!nameInput || !nameCheckoutButtons.length) return;
+
+  const clearFeedback = () => {
+    if (feedback) feedback.textContent = '';
+  };
+
+  nameInput.addEventListener('input', clearFeedback);
+
+  nameCheckoutButtons.forEach((btn) => {
+    btn.addEventListener('click', (event) => {
+      const baseUrl = (btn.dataset.baseUrl || btn.getAttribute('href') || '').trim();
+      if (!baseUrl || baseUrl === '#') {
+        return;
+      }
+
+      const displayName = nameInput.value.trim();
+      if (!displayName) {
+        event.preventDefault();
+        if (feedback) {
+          feedback.textContent = 'Enter display name before using name add-on checkout.';
+        }
+        nameInput.focus();
+        return;
+      }
+
+      btn.href = buildCheckoutUrlWithDisplayName(baseUrl, displayName);
+      clearFeedback();
+    });
+  });
 }
 
 function initVerifyForm() {
@@ -436,7 +484,9 @@ function initCanvas() {
   draw(0);
 }
 
-loadConfig();
+loadConfig().finally(() => {
+  initNameAddonCheckout();
+});
 initVerifyForm();
 initCertificateForm();
 initTicker();
