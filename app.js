@@ -34,7 +34,9 @@ async function loadConfig() {
 
     checkoutButtons.forEach((btn) => {
       const tier = (btn.dataset.checkout || 'default').toLowerCase();
-      const fallbackUrl = (checkoutUrls[tier] || checkoutUrls.default || checkoutUrl || '').trim();
+      const fallbackUrl = tier === 'standard_addon'
+        ? (checkoutUrls.standard_addon || '').trim()
+        : (checkoutUrls[tier] || checkoutUrls.default || checkoutUrl || '').trim();
       const tierUrl = tier === 'founders' && foundersContactUrl ? foundersContactUrl : fallbackUrl;
       const opensInNewTab = /^https?:\/\//i.test(tierUrl);
 

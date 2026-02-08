@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="hat-api-base" content="" />
   <title>HAT — Human Authentication Token</title>
-  <link rel="stylesheet" href="styles.css?v=9" />
+  <link rel="stylesheet" href="styles.css?v=10" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -206,7 +206,10 @@
             <li>Name add-on (+EUR <span data-name-addon>5</span>)</li>
             <li>Private log + public verification</li>
           </ul>
-          <a class="btn" data-checkout="standard">Get token</a>
+          <div class="tier-actions">
+            <a class="btn" data-checkout="standard">Get token</a>
+            <a class="btn btn-ghost" data-checkout="standard_addon">Get token + name add-on</a>
+          </div>
         </article>
       </div>
     </section>
@@ -296,6 +299,6 @@
     <p>HAT: private issuance log, public proof, portable human-authentication.</p>
   </footer>
 
-  <script src="app.js?v=8"></script>
+  <script src="app.js?v=9"></script>
 </body>
 </html>

@@ -19,7 +19,8 @@ const CHECKOUT_URLS = {
   elite: process.env.CHECKOUT_URL_ELITE || '',
   early: process.env.CHECKOUT_URL_EARLY || '',
   mid: process.env.CHECKOUT_URL_MID || '',
-  standard: process.env.CHECKOUT_URL_STANDARD || ''
+  standard: process.env.CHECKOUT_URL_STANDARD || '',
+  standard_addon: process.env.CHECKOUT_URL_STANDARD_ADDON || ''
 };
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || '';
 const WEBHOOK_SIGNATURE_HEADER = (process.env.WEBHOOK_SIGNATURE_HEADER || 'x-signature').toLowerCase();

@@ -7,7 +7,8 @@ const CHECKOUT_URLS = {
   elite: process.env.CHECKOUT_URL_ELITE || '',
   early: process.env.CHECKOUT_URL_EARLY || '',
   mid: process.env.CHECKOUT_URL_MID || '',
-  standard: process.env.CHECKOUT_URL_STANDARD || ''
+  standard: process.env.CHECKOUT_URL_STANDARD || '',
+  standard_addon: process.env.CHECKOUT_URL_STANDARD_ADDON || ''
 };
 
 const NAME_ADDON_PRICE = Number(process.env.NAME_ADDON_PRICE || 5);
