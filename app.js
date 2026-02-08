@@ -18,10 +18,12 @@ function buildCheckoutUrlWithDisplayName(baseUrl, displayName) {
   try {
     const url = new URL(baseUrl, window.location.origin);
     url.searchParams.set('checkout[custom][display_name]', displayName);
+    url.searchParams.set('checkout[custom][name]', displayName);
     return url.toString();
   } catch (err) {
     const joiner = baseUrl.includes('?') ? '&' : '?';
-    return `${baseUrl}${joiner}checkout%5Bcustom%5D%5Bdisplay_name%5D=${encodeURIComponent(displayName)}`;
+    const encoded = encodeURIComponent(displayName);
+    return `${baseUrl}${joiner}checkout%5Bcustom%5D%5Bdisplay_name%5D=${encoded}&checkout%5Bcustom%5D%5Bname%5D=${encoded}`;
   }
 }
 

@@ -56,12 +56,16 @@ module.exports = async (req, res) => {
   }
 
   if (existing) {
-    if (orderNumber && !existing.order_number) {
+    if ((orderNumber && !existing.order_number) || (!existing.name && resolvedName.name)) {
       try {
+        const nextOrderNumber = orderNumber && !existing.order_number ? orderNumber : existing.order_number;
+        const nextName = !existing.name && resolvedName.name ? resolvedName.name : existing.name;
         await client.execute({
-          sql: 'UPDATE tokens SET order_number = ? WHERE id = ?',
-          args: [orderNumber, existing.id]
+          sql: 'UPDATE tokens SET order_number = ?, name = ? WHERE id = ?',
+          args: [nextOrderNumber, nextName, existing.id]
         });
+        existing.order_number = nextOrderNumber;
+        existing.name = nextName;
       } catch (err) {
         return res.status(500).json({ error: 'Database error' });
       }
@@ -109,12 +113,16 @@ module.exports = async (req, res) => {
           });
           const dupRow = dup.rows && dup.rows.length ? dup.rows[0] : null;
           if (dupRow) {
-            if (orderNumber && !dupRow.order_number) {
+            if ((orderNumber && !dupRow.order_number) || (!dupRow.name && resolvedName.name)) {
               try {
+                const nextOrderNumber = orderNumber && !dupRow.order_number ? orderNumber : dupRow.order_number;
+                const nextName = !dupRow.name && resolvedName.name ? resolvedName.name : dupRow.name;
                 await client.execute({
-                  sql: 'UPDATE tokens SET order_number = ? WHERE id = ?',
-                  args: [orderNumber, dupRow.id]
+                  sql: 'UPDATE tokens SET order_number = ?, name = ? WHERE id = ?',
+                  args: [nextOrderNumber, nextName, dupRow.id]
                 });
+                dupRow.order_number = nextOrderNumber;
+                dupRow.name = nextName;
               } catch (updateErr) {
                 return res.status(500).json({ error: 'Database error' });
               }
