@@ -30,7 +30,7 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'Invalid JSON' });
   }
 
-  const { orderId, email, name } = extractWebhookFields(payload);
+  const { orderId, orderNumber, email, name } = extractWebhookFields(payload);
 
   if (!orderId) {
     return res.status(400).json({ error: 'Missing order id' });
@@ -39,8 +39,8 @@ module.exports = async (req, res) => {
   let existing;
   try {
     const lookup = await client.execute({
-      sql: 'SELECT token, name, created_at FROM tokens WHERE order_id = ? LIMIT 1',
-      args: [orderId]
+      sql: 'SELECT id, token, name, created_at, order_number FROM tokens WHERE order_id = ? OR order_number = ? LIMIT 1',
+      args: [orderId, orderNumber]
     });
     existing = lookup.rows && lookup.rows.length ? lookup.rows[0] : null;
   } catch (err) {
@@ -48,6 +48,16 @@ module.exports = async (req, res) => {
   }
 
   if (existing) {
+    if (orderNumber && !existing.order_number) {
+      try {
+        await client.execute({
+          sql: 'UPDATE tokens SET order_number = ? WHERE id = ?',
+          args: [orderNumber, existing.id]
+        });
+      } catch (err) {
+        return res.status(500).json({ error: 'Database error' });
+      }
+    }
     return res.json({ ok: true, duplicate: true, token: existing.token, name: existing.name, created_at: existing.created_at });
   }
 
@@ -58,8 +68,8 @@ module.exports = async (req, res) => {
     const userIdentifier = generateUserIdentifier();
     try {
       const insertResult = await client.execute({
-        sql: 'INSERT INTO tokens (token, name, order_id, email, created_at, user_identifier, certificate_number) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id, name, created_at, user_identifier',
-        args: [null, name, orderId, email, createdAt, userIdentifier, null]
+        sql: 'INSERT INTO tokens (token, name, order_id, order_number, email, created_at, user_identifier, certificate_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id, name, created_at, user_identifier',
+        args: [null, name, orderId, orderNumber, email, createdAt, userIdentifier, null]
       });
       inserted = insertResult.rows && insertResult.rows.length ? insertResult.rows[0] : null;
       insertError = null;
@@ -70,14 +80,29 @@ module.exports = async (req, res) => {
       if (!message.includes('SQLITE_CONSTRAINT')) {
         break;
       }
-      if (message.includes('tokens.order_id') || message.includes('idx_tokens_order')) {
+      if (
+        message.includes('tokens.order_id') ||
+        message.includes('idx_tokens_order') ||
+        message.includes('tokens.order_number') ||
+        message.includes('idx_tokens_order_number')
+      ) {
         try {
           const dup = await client.execute({
-            sql: 'SELECT token, name, created_at FROM tokens WHERE order_id = ? LIMIT 1',
-            args: [orderId]
+            sql: 'SELECT id, token, name, created_at, order_number FROM tokens WHERE order_id = ? OR order_number = ? LIMIT 1',
+            args: [orderId, orderNumber]
           });
           const dupRow = dup.rows && dup.rows.length ? dup.rows[0] : null;
           if (dupRow) {
+            if (orderNumber && !dupRow.order_number) {
+              try {
+                await client.execute({
+                  sql: 'UPDATE tokens SET order_number = ? WHERE id = ?',
+                  args: [orderNumber, dupRow.id]
+                });
+              } catch (updateErr) {
+                return res.status(500).json({ error: 'Database error' });
+              }
+            }
             return res.json({ ok: true, duplicate: true, token: dupRow.token, name: dupRow.name, created_at: dupRow.created_at });
           }
         } catch (dupErr) {

@@ -20,6 +20,7 @@ async function loadConfig() {
     const data = await res.json();
     const checkoutUrl = (data.checkoutUrl || '').trim();
     const checkoutUrls = data.checkoutUrls || {};
+    const foundersContactUrl = (data.foundersContactUrl || '').trim();
     const nameAddonPrice = Number.isFinite(Number(data.nameAddonPrice)) ? Number(data.nameAddonPrice) : 5;
     const standardPrice = Number.isFinite(Number(data.standardPrice)) ? Number(data.standardPrice) : 3;
 
@@ -33,12 +34,19 @@ async function loadConfig() {
 
     checkoutButtons.forEach((btn) => {
       const tier = (btn.dataset.checkout || 'default').toLowerCase();
-      const tierUrl = (checkoutUrls[tier] || checkoutUrls.default || checkoutUrl || '').trim();
+      const fallbackUrl = (checkoutUrls[tier] || checkoutUrls.default || checkoutUrl || '').trim();
+      const tierUrl = tier === 'founders' && foundersContactUrl ? foundersContactUrl : fallbackUrl;
+      const opensInNewTab = /^https?:\/\//i.test(tierUrl);
 
       if (tierUrl) {
         btn.href = tierUrl;
-        btn.target = '_blank';
-        btn.rel = 'noopener';
+        if (opensInNewTab) {
+          btn.target = '_blank';
+          btn.rel = 'noopener';
+        } else {
+          btn.removeAttribute('target');
+          btn.removeAttribute('rel');
+        }
         btn.classList.remove('is-disabled');
       } else {
         btn.href = '#';
@@ -186,7 +194,7 @@ function initCertificateForm() {
     const email = (form.querySelector('input[name="email"]') || {}).value?.trim() || '';
 
     if (!orderId || !email) {
-      result.textContent = 'Enter both order ID and purchase email.';
+      result.textContent = 'Enter both order reference and purchase email.';
       return;
     }
 

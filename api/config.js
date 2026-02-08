@@ -12,6 +12,7 @@ const CHECKOUT_URLS = {
 
 const NAME_ADDON_PRICE = Number(process.env.NAME_ADDON_PRICE || 5);
 const STANDARD_PRICE = Number(process.env.STANDARD_PRICE || 3);
+const FOUNDERS_CONTACT_URL = process.env.FOUNDERS_CONTACT_URL || '';
 
 module.exports = (req, res) => {
   if (req.method === 'OPTIONS') {
@@ -29,6 +30,7 @@ module.exports = (req, res) => {
   return res.json({
     checkoutUrl: CHECKOUT_URL,
     checkoutUrls: CHECKOUT_URLS,
+    foundersContactUrl: FOUNDERS_CONTACT_URL,
     nameAddonPrice: Number.isFinite(NAME_ADDON_PRICE) ? NAME_ADDON_PRICE : 5,
     standardPrice: Number.isFinite(STANDARD_PRICE) ? STANDARD_PRICE : 3
   });

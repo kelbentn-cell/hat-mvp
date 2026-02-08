@@ -26,6 +26,7 @@ const WEBHOOK_SIGNATURE_HEADER = (process.env.WEBHOOK_SIGNATURE_HEADER || 'x-sig
 const ADMIN_KEY = process.env.ADMIN_KEY || '';
 const NAME_ADDON_PRICE = Number(process.env.NAME_ADDON_PRICE || 5);
 const STANDARD_PRICE = Number(process.env.STANDARD_PRICE || 3);
+const FOUNDERS_CONTACT_URL = process.env.FOUNDERS_CONTACT_URL || '';
 const CORS_ORIGIN = process.env.CORS_ORIGIN || '';
 const ALLOWED_ORIGINS = CORS_ORIGIN.split(',').map((origin) => origin.trim()).filter(Boolean);
 
@@ -40,6 +41,7 @@ db.serialize(() => {
       certificate_number TEXT UNIQUE,
       name TEXT,
       order_id TEXT UNIQUE,
+      order_number TEXT UNIQUE,
       email TEXT,
       created_at TEXT NOT NULL
     )
@@ -54,10 +56,16 @@ db.serialize(() => {
       console.error('Failed to add certificate_number column:', err.message);
     }
   });
+  db.run('ALTER TABLE tokens ADD COLUMN order_number TEXT', (err) => {
+    if (err && !String(err.message || '').includes('duplicate column name')) {
+      console.error('Failed to add order_number column:', err.message);
+    }
+  });
   db.run('CREATE UNIQUE INDEX IF NOT EXISTS idx_tokens_token ON tokens(token)');
   db.run('CREATE UNIQUE INDEX IF NOT EXISTS idx_tokens_user_identifier ON tokens(user_identifier)');
   db.run('CREATE UNIQUE INDEX IF NOT EXISTS idx_tokens_certificate_number ON tokens(certificate_number)');
   db.run('CREATE UNIQUE INDEX IF NOT EXISTS idx_tokens_order ON tokens(order_id)');
+  db.run('CREATE UNIQUE INDEX IF NOT EXISTS idx_tokens_order_number ON tokens(order_number)');
 });
 
 const app = express();
@@ -105,15 +113,27 @@ function cleanString(value) {
   return trimmed.length ? trimmed : null;
 }
 
+function normalizeOrderReference(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return null;
+  return raw.replace(/^order\s*#?\s*/i, '').replace(/^#\s*/, '').trim() || null;
+}
+
 function extractWebhookFields(payload) {
   const orderId = (
     get(payload, 'data.id') ||
     get(payload, 'data.attributes.order_id') ||
-    get(payload, 'data.attributes.order_number') ||
     get(payload, 'meta.order_id') ||
     get(payload, 'meta.orderId') ||
     get(payload, 'order_id') ||
     get(payload, 'orderId')
+  );
+  const orderNumber = (
+    get(payload, 'data.attributes.order_number') ||
+    get(payload, 'meta.order_number') ||
+    get(payload, 'meta.orderNumber') ||
+    get(payload, 'order_number') ||
+    get(payload, 'orderNumber')
   );
 
   const email = cleanString(
@@ -134,7 +154,8 @@ function extractWebhookFields(payload) {
   );
 
   return {
-    orderId: orderId ? String(orderId) : null,
+    orderId: normalizeOrderReference(orderId),
+    orderNumber: normalizeOrderReference(orderNumber),
     email,
     name
   };
@@ -181,6 +202,7 @@ app.get('/api/config', (req, res) => {
   res.json({
     checkoutUrl: CHECKOUT_URL,
     checkoutUrls: CHECKOUT_URLS,
+    foundersContactUrl: FOUNDERS_CONTACT_URL,
     nameAddonPrice: Number.isFinite(NAME_ADDON_PRICE) ? NAME_ADDON_PRICE : 5,
     standardPrice: Number.isFinite(STANDARD_PRICE) ? STANDARD_PRICE : 3
   });
@@ -199,19 +221,30 @@ app.post('/api/webhooks/lemonsqueezy', (req, res) => {
   }
 
   const payload = req.body || {};
-  const { orderId, email, name } = extractWebhookFields(payload);
+  const { orderId, orderNumber, email, name } = extractWebhookFields(payload);
 
   if (!orderId) {
     return res.status(400).json({ error: 'Missing order id' });
   }
 
   db.serialize(() => {
-    db.get('SELECT token, name, created_at FROM tokens WHERE order_id = ?', [orderId], (err, row) => {
+    db.get(
+      'SELECT id, token, name, created_at, order_number FROM tokens WHERE order_id = ? OR order_number = ? LIMIT 1',
+      [orderId, orderNumber],
+      (err, row) => {
       if (err) {
         return res.status(500).json({ error: 'Database error' });
       }
 
       if (row) {
+        if (orderNumber && !row.order_number) {
+          return db.run('UPDATE tokens SET order_number = ? WHERE id = ?', [orderNumber, row.id], (updateErr) => {
+            if (updateErr) {
+              return res.status(500).json({ error: 'Database error' });
+            }
+            return res.json({ ok: true, duplicate: true, token: row.token, name: row.name, created_at: row.created_at });
+          });
+        }
         return res.json({ ok: true, duplicate: true, token: row.token, name: row.name, created_at: row.created_at });
       }
 
@@ -219,8 +252,8 @@ app.post('/api/webhooks/lemonsqueezy', (req, res) => {
       const attemptInsert = (attempt = 0) => {
         const userIdentifier = generateUserIdentifier();
         db.run(
-          'INSERT INTO tokens (token, user_identifier, certificate_number, name, order_id, email, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
-          [null, userIdentifier, null, name, orderId, email, createdAt],
+          'INSERT INTO tokens (token, user_identifier, certificate_number, name, order_id, order_number, email, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+          [null, userIdentifier, null, name, orderId, orderNumber, email, createdAt],
           function insertCallback(insertErr) {
             if (insertErr) {
               if (insertErr.code === 'SQLITE_CONSTRAINT') {
@@ -228,15 +261,27 @@ app.post('/api/webhooks/lemonsqueezy', (req, res) => {
                 if ((message.includes('user_identifier') || message.includes('idx_tokens_user_identifier')) && attempt < 2) {
                   return attemptInsert(attempt + 1);
                 }
-                db.get('SELECT token, name, created_at FROM tokens WHERE order_id = ?', [orderId], (dupErr, dupRow) => {
+                db.get(
+                  'SELECT id, token, name, created_at, order_number FROM tokens WHERE order_id = ? OR order_number = ? LIMIT 1',
+                  [orderId, orderNumber],
+                  (dupErr, dupRow) => {
                   if (dupErr) {
                     return res.status(500).json({ error: 'Database error' });
                   }
                   if (dupRow) {
+                    if (orderNumber && !dupRow.order_number) {
+                      return db.run('UPDATE tokens SET order_number = ? WHERE id = ?', [orderNumber, dupRow.id], (updateErr) => {
+                        if (updateErr) {
+                          return res.status(500).json({ error: 'Database error' });
+                        }
+                        return res.json({ ok: true, duplicate: true, token: dupRow.token, name: dupRow.name, created_at: dupRow.created_at });
+                      });
+                    }
                     return res.json({ ok: true, duplicate: true, token: dupRow.token, name: dupRow.name, created_at: dupRow.created_at });
                   }
                   return res.status(409).json({ error: 'Duplicate order' });
-                });
+                  }
+                );
                 return;
               }
               return res.status(500).json({ error: 'Database error' });
@@ -269,7 +314,8 @@ app.post('/api/webhooks/lemonsqueezy', (req, res) => {
       };
 
       attemptInsert();
-    });
+      }
+    );
   });
 });
 
@@ -307,7 +353,7 @@ app.options('/api/verify', (req, res) => {
 
 app.post('/api/certificate', (req, res) => {
   applyCors(req, res);
-  const orderId = String(req.body?.orderId || req.body?.order_id || '').trim();
+  const orderId = normalizeOrderReference(req.body?.orderId || req.body?.order_id);
   const email = String(req.body?.email || '').trim().toLowerCase();
 
   if (!orderId || !email) {
@@ -315,8 +361,8 @@ app.post('/api/certificate', (req, res) => {
   }
 
   db.get(
-    'SELECT id, token, name, created_at, user_identifier, certificate_number, email FROM tokens WHERE order_id = ? LIMIT 1',
-    [orderId],
+    'SELECT id, token, name, created_at, user_identifier, certificate_number, email FROM tokens WHERE order_id = ? OR order_number = ? LIMIT 1',
+    [orderId, orderId],
     (err, row) => {
       if (err) {
         return res.status(500).json({ error: 'Database error' });
@@ -372,7 +418,7 @@ app.options('/api/certificate', (req, res) => {
 
 app.post('/api/certificate-pdf', (req, res) => {
   applyCors(req, res);
-  const orderId = String(req.body?.orderId || req.body?.order_id || '').trim();
+  const orderId = normalizeOrderReference(req.body?.orderId || req.body?.order_id);
   const email = String(req.body?.email || '').trim().toLowerCase();
 
   if (!orderId || !email) {
@@ -380,8 +426,8 @@ app.post('/api/certificate-pdf', (req, res) => {
   }
 
   db.get(
-    'SELECT id, token, name, created_at, user_identifier, certificate_number, email FROM tokens WHERE order_id = ? LIMIT 1',
-    [orderId],
+    'SELECT id, token, name, created_at, user_identifier, certificate_number, email FROM tokens WHERE order_id = ? OR order_number = ? LIMIT 1',
+    [orderId, orderId],
     (err, row) => {
       if (err) {
         return res.status(500).json({ error: 'Database error' });
@@ -451,7 +497,7 @@ app.get('/api/admin/tokens', (req, res) => {
   }
 
   db.all(
-    'SELECT id, token, user_identifier, certificate_number, name, order_id, email, created_at FROM tokens ORDER BY id DESC LIMIT 200',
+    'SELECT id, token, user_identifier, certificate_number, name, order_id, order_number, email, created_at FROM tokens ORDER BY id DESC LIMIT 200',
     (err, rows) => {
       if (err) {
         return res.status(500).json({ error: 'Database error' });

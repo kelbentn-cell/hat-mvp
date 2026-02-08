@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="hat-api-base" content="" />
   <title>HAT — Human Authentication Token</title>
-  <link rel="stylesheet" href="styles.css?v=7" />
+  <link rel="stylesheet" href="styles.css?v=8" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -152,15 +152,17 @@
             <li>Founders highlight (optional)</li>
             <li>Priority issuance</li>
             <li>Name add-on included</li>
+            <li>Managed onboarding + direct payment handling</li>
             <li>Private log + public verification</li>
           </ul>
-          <a class="btn" data-checkout="founders">Get token</a>
+          <a class="btn" data-checkout="founders">Request founders access</a>
+          <p class="price-note">Concierge tier for strategic buyers. We handle this tier manually.</p>
         </article>
 
         <article class="price-card premium">
           <div class="badge">Elite</div>
           <h3>HAT #11-20</h3>
-          <p class="price">EUR 5k</p>
+          <p class="price">EUR 4.2k</p>
           <ul>
             <li>Low token number</li>
             <li>Fast issuance</li>
@@ -227,11 +229,11 @@
       <div class="section-header">
         <p class="eyebrow">Private certificate</p>
         <h2>Issue your private HAT certificate.</h2>
-        <p class="subtext">Enter the purchase order ID and purchase email to retrieve a private certificate with your HAT number and private user identifier.</p>
+        <p class="subtext">Enter your Lemon order reference (for example, Order #2878492) and purchase email to retrieve a private certificate with your HAT number and private user identifier.</p>
       </div>
 
       <form id="certificate-form" class="verify-form">
-        <input type="text" name="orderId" placeholder="Order ID" autocomplete="off" />
+        <input type="text" name="orderId" placeholder="Order #2878492" autocomplete="off" />
         <input type="email" name="email" placeholder="Purchase email" autocomplete="off" />
         <button class="btn" type="submit">Get certificate</button>
       </form>
@@ -294,6 +296,6 @@
     <p>HAT: private issuance log, public proof, portable human-authentication.</p>
   </footer>
 
-  <script src="app.js?v=7"></script>
+  <script src="app.js?v=8"></script>
 </body>
 </html>

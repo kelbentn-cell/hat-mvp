@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
   let result;
   try {
     result = await client.execute({
-      sql: 'SELECT id, token, user_identifier, certificate_number, name, order_id, email, created_at FROM tokens ORDER BY id DESC LIMIT 200',
+      sql: 'SELECT id, token, user_identifier, certificate_number, name, order_id, order_number, email, created_at FROM tokens ORDER BY id DESC LIMIT 200',
       args: []
     });
   } catch (err) {

@@ -1,5 +1,10 @@
 const { applyCors } = require('../lib/cors');
-const { formatCertificateNumber, generateUserIdentifier, readJsonBody } = require('../lib/hat');
+const {
+  formatCertificateNumber,
+  generateUserIdentifier,
+  normalizeOrderReference,
+  readJsonBody
+} = require('../lib/hat');
 const { client } = require('../lib/turso');
 
 function normalize(value) {
@@ -27,7 +32,7 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'Invalid JSON body' });
   }
 
-  const orderId = normalize(body.orderId || body.order_id);
+  const orderId = normalizeOrderReference(body.orderId || body.order_id);
   const email = normalize(body.email).toLowerCase();
 
   if (!orderId || !email) {
@@ -37,8 +42,8 @@ module.exports = async (req, res) => {
   let result;
   try {
     result = await client.execute({
-      sql: 'SELECT id, token, name, created_at, user_identifier, certificate_number, email FROM tokens WHERE order_id = ? LIMIT 1',
-      args: [orderId]
+      sql: 'SELECT id, token, name, created_at, user_identifier, certificate_number, email FROM tokens WHERE order_id = ? OR order_number = ? LIMIT 1',
+      args: [orderId, orderId]
     });
   } catch (err) {
     return res.status(500).json({ error: 'Database error' });
