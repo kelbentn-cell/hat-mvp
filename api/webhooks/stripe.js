@@ -1,33 +1,30 @@
 const { client } = require('../../lib/turso');
-const stripeWebhookHandler = require('./stripe');
 const {
-  extractWebhookFields,
+  extractStripeFields,
   formatCertificateNumber,
   formatToken,
   generateUserIdentifier,
   getNextTokenNumberForTier,
   readRawBody,
   resolveDisplayNameForTier,
-  resolveTierFromPayload,
-  verifyWebhookSignature
+  resolveTierFromStripeSession,
+  verifyStripeSignature
 } = require('../../lib/hat');
 
-const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || '';
-const WEBHOOK_SIGNATURE_HEADER = (process.env.WEBHOOK_SIGNATURE_HEADER || 'x-signature').toLowerCase();
+const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || process.env.WEBHOOK_SECRET || '';
+const STRIPE_WEBHOOK_SIGNATURE_HEADER = (process.env.STRIPE_WEBHOOK_SIGNATURE_HEADER || 'stripe-signature').toLowerCase();
+const STRIPE_WEBHOOK_TOLERANCE_SECONDS = Number(process.env.STRIPE_WEBHOOK_TOLERANCE_SECONDS || 300);
+const ACCEPTED_EVENTS = new Set(['checkout.session.completed', 'checkout.session.async_payment_succeeded']);
 
 module.exports = async (req, res) => {
-  if (req.headers['stripe-signature']) {
-    return stripeWebhookHandler(req, res);
-  }
-
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   const rawBody = await readRawBody(req);
-  const signature = (req.headers[WEBHOOK_SIGNATURE_HEADER] || '').toString();
+  const signature = (req.headers[STRIPE_WEBHOOK_SIGNATURE_HEADER] || '').toString();
 
-  if (!verifyWebhookSignature(rawBody, signature, WEBHOOK_SECRET)) {
+  if (!verifyStripeSignature(rawBody, signature, STRIPE_WEBHOOK_SECRET, STRIPE_WEBHOOK_TOLERANCE_SECONDS)) {
     return res.status(401).json({ error: 'Invalid signature' });
   }
 
@@ -38,13 +35,19 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'Invalid JSON' });
   }
 
-  const { orderId, orderNumber, email, name } = extractWebhookFields(payload);
-  const tier = resolveTierFromPayload(payload);
+  const eventType = String(payload.type || '').trim();
+  if (!ACCEPTED_EVENTS.has(eventType)) {
+    return res.json({ ok: true, ignored: true, event: eventType || 'unknown' });
+  }
+
+  const { orderId, orderNumber, email, name } = extractStripeFields(payload);
+  const tier = resolveTierFromStripeSession(payload);
   const resolvedName = resolveDisplayNameForTier(payload, tier, name);
 
   if (!orderId) {
     return res.status(400).json({ error: 'Missing order id' });
   }
+
   if (!tier) {
     return res.status(400).json({ error: 'Unable to resolve tier for this order' });
   }
@@ -75,20 +78,21 @@ module.exports = async (req, res) => {
         return res.status(500).json({ error: 'Database error' });
       }
     }
+
     return res.json({
       ok: true,
       duplicate: true,
       token: existing.token,
       name: existing.name,
       created_at: existing.created_at,
-      tier,
-      name_addon_paid: resolvedName.nameAddonPaid
+      tier
     });
   }
 
   const createdAt = new Date().toISOString();
   let inserted;
   let insertError;
+
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const userIdentifier = generateUserIdentifier();
     try {
@@ -105,6 +109,7 @@ module.exports = async (req, res) => {
       if (!message.includes('SQLITE_CONSTRAINT')) {
         break;
       }
+
       if (
         message.includes('tokens.order_id') ||
         message.includes('idx_tokens_order') ||
@@ -132,21 +137,23 @@ module.exports = async (req, res) => {
                 return res.status(500).json({ error: 'Database error' });
               }
             }
+
             return res.json({
               ok: true,
               duplicate: true,
               token: dupRow.token,
               name: dupRow.name,
               created_at: dupRow.created_at,
-              tier,
-              name_addon_paid: resolvedName.nameAddonPaid
+              tier
             });
           }
         } catch (dupErr) {
           return res.status(500).json({ error: 'Database error' });
         }
+
         return res.status(409).json({ error: 'Duplicate order' });
       }
+
       if (!message.includes('tokens.user_identifier') && !message.includes('idx_tokens_user_identifier')) {
         break;
       }
@@ -165,6 +172,7 @@ module.exports = async (req, res) => {
   let token = null;
   let issuedTokenNumber = null;
   let assigned = false;
+
   for (let attempt = 0; attempt < 8; attempt += 1) {
     try {
       issuedTokenNumber = await getNextTokenNumberForTier(client, tier);
@@ -196,7 +204,6 @@ module.exports = async (req, res) => {
     token,
     token_number: issuedTokenNumber,
     tier,
-    name_addon_paid: resolvedName.nameAddonPaid,
     name: inserted.name,
     created_at: inserted.created_at,
     certificate_number: certificateNumber,

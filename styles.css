@@ -394,6 +394,17 @@ h1 {
   line-height: 1.65;
 }
 
+.policy-note {
+  margin-top: 18px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(23, 22, 19, 0.12);
+  background: rgba(255, 255, 255, 0.58);
+  color: var(--ink-soft);
+  line-height: 1.55;
+  font-size: 0.93rem;
+}
+
 .grid {
   display: grid;
   gap: 20px;
@@ -654,6 +665,12 @@ h1 {
   color: var(--ink-soft);
 }
 
+.verify .subtext code {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 0.92em;
+}
+
 .certificate-card {
   margin-top: 24px;
   border-radius: 20px;
@@ -743,6 +760,11 @@ h1 {
   text-align: center;
   color: var(--ink-muted);
   border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.footer-note {
+  margin-top: 6px;
+  font-size: 0.88rem;
 }
 
 .reveal {

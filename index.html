@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="hat-api-base" content="" />
   <title>HAT — Human Authentication Token</title>
-  <link rel="stylesheet" href="styles.css?v=11" />
+  <link rel="stylesheet" href="styles.css?v=12" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -30,11 +30,11 @@
     <section class="hero reveal">
       <div class="hero-copy">
         <p class="eyebrow">Human Authentication Token</p>
-        <h1>Attach proof of personhood to every public sentence.</h1>
-        <p class="tagline">Human provenance for the agent era.</p>
+        <h1>Attach accountable human provenance to every public sentence.</h1>
+        <p class="tagline">A portable proof layer for an agent-saturated internet.</p>
         <p class="lede">
           We are entering a feed where human and synthetic text look identical. HAT gives you a portable human-authentication token,
-          like <strong>HAT-000001</strong>, that you paste at the end of any post. No lock-in. No fragile integrations. Just verifiable provenance.
+          like <strong>HAT-000001</strong>, that you paste at the end of any post. No lock-in. No fragile integrations. Just verifiable issuance provenance.
         </p>
         <div class="hero-actions">
           <a class="btn" data-checkout="default">Get a token</a>
@@ -56,7 +56,7 @@
         <div class="panel-topline">Live trust layer</div>
         <div class="token-pill">HAT-000001</div>
         <h3>Human-authenticated output.</h3>
-        <p>Private issuance log. Public verification. Identity stays private by default. Display name is available for founders tier.</p>
+        <p>Private issuance log. Public verification. Identity stays private by default. Founders can include a display name.</p>
 
         <div class="hero-metrics">
           <div>
@@ -109,6 +109,7 @@
           <p>If trust only works inside one app, it fails on the open web. HAT travels with your text across platforms and communities.</p>
         </article>
       </div>
+      <p class="policy-note">HAT is a digital provenance token with public verification of issuance. It is not government-issued identification and does not guarantee legal identity.</p>
     </section>
 
     <section id="how" class="section reveal">
@@ -131,7 +132,7 @@
         <article class="card step-card">
           <span class="step-index">03</span>
           <h3>Let anyone verify</h3>
-          <p>The public endpoint confirms token validity and issuance timestamp without exposing private identity.</p>
+          <p>The public endpoint confirms token validity and issuance timestamp without exposing private identity data.</p>
         </article>
       </div>
     </section>
@@ -229,11 +230,11 @@
       <div class="section-header">
         <p class="eyebrow">Private certificate</p>
         <h2>Issue your private HAT certificate.</h2>
-        <p class="subtext">Enter your Lemon order reference (for example, Order #2878492) and purchase email to retrieve a private certificate with your HAT number and private user identifier.</p>
+        <p class="subtext">Enter your payment reference (Stripe Checkout Session ID like <code>cs_...</code> or Payment Intent ID like <code>pi_...</code>) and purchase email to retrieve your private certificate.</p>
       </div>
 
       <form id="certificate-form" class="verify-form">
-        <input type="text" name="orderId" placeholder="Order #2878492" autocomplete="off" />
+        <input type="text" name="orderId" placeholder="cs_test_... or pi_..." autocomplete="off" />
         <input type="email" name="email" placeholder="Purchase email" autocomplete="off" />
         <button class="btn" type="submit">Get certificate</button>
       </form>
@@ -294,8 +295,9 @@
 
   <footer class="site-footer">
     <p>HAT: private issuance log, public proof, portable human-authentication.</p>
+    <p class="footer-note">Digital provenance token. Not legal identity verification.</p>
   </footer>
 
-  <script src="app.js?v=11"></script>
+  <script src="app.js?v=12"></script>
 </body>
 </html>
