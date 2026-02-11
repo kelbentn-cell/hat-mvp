@@ -91,6 +91,26 @@ function initVerifyForm() {
   });
 }
 
+function initUsageExample() {
+  const verifyLink = document.querySelector('[data-example-verify-url]');
+  if (!verifyLink) return;
+
+  const token = 'HAT-000101';
+  const path = `/api/verify?token=${encodeURIComponent(token)}`;
+  const absoluteUrl = (() => {
+    if (apiBase && /^https?:\/\//i.test(apiBase)) {
+      return `${apiBase}${path}`;
+    }
+    if (typeof window !== 'undefined' && window.location && window.location.origin) {
+      return `${window.location.origin}${path}`;
+    }
+    return path;
+  })();
+
+  verifyLink.href = absoluteUrl;
+  verifyLink.textContent = absoluteUrl;
+}
+
 function escapeHtml(value) {
   return String(value || '')
     .replace(/&/g, '&amp;')
@@ -429,6 +449,7 @@ function initCanvas() {
 }
 
 loadConfig();
+initUsageExample();
 initVerifyForm();
 initCertificateForm();
 initTicker();

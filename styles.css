@@ -215,6 +215,17 @@ h1 {
   color: var(--ink-soft);
 }
 
+.mvp-note {
+  margin-top: 16px;
+  padding: 11px 13px;
+  border-radius: 12px;
+  border: 1px solid rgba(23, 22, 19, 0.12);
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--ink-soft);
+  line-height: 1.6;
+  font-size: 0.92rem;
+}
+
 .chips {
   display: flex;
   flex-wrap: wrap;
@@ -347,6 +358,13 @@ h1 {
   color: var(--ink-soft);
   max-width: 68ch;
   line-height: 1.7;
+}
+
+.funding-note {
+  margin-top: 12px;
+  max-width: 68ch;
+  color: var(--ink);
+  font-weight: 600;
 }
 
 .narrative {
@@ -555,6 +573,16 @@ h1 {
   line-height: 1.45;
 }
 
+.tier-status {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  border: 1px dashed rgba(23, 22, 19, 0.24);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.6);
+}
+
 .tier-actions {
   display: flex;
   flex-wrap: wrap;
@@ -669,6 +697,49 @@ h1 {
   font-family: 'Space Grotesk', system-ui, sans-serif;
   font-weight: 700;
   font-size: 0.92em;
+}
+
+.usage {
+  background: var(--card);
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  padding: clamp(24px, 4vw, 50px);
+  box-shadow: var(--shadow-soft);
+}
+
+.usage-card {
+  border-radius: 18px;
+  border: 1px solid rgba(23, 22, 19, 0.14);
+  background: rgba(255, 255, 255, 0.68);
+  padding: 22px;
+}
+
+.usage-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-muted);
+  margin-bottom: 10px;
+}
+
+.usage-line {
+  color: var(--ink-soft);
+  line-height: 1.65;
+  margin-top: 4px;
+}
+
+.usage-line code {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.usage-line a {
+  color: #1b5a77;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
 }
 
 .certificate-card {

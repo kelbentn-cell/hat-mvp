@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="hat-api-base" content="" />
   <title>HAT — Human Authentication Token</title>
-  <link rel="stylesheet" href="styles.css?v=12" />
+  <link rel="stylesheet" href="styles.css?v=13" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -20,10 +20,10 @@
       <a href="#context">Context</a>
       <a href="#how">How It Works</a>
       <a href="#pricing">Pricing</a>
+      <a href="#example">Example</a>
       <a href="#verify">Verify</a>
       <a href="#certificate">Certificate</a>
     </nav>
-    <a class="btn btn-small" data-checkout="default">Get token</a>
   </header>
 
   <main>
@@ -37,7 +37,7 @@
           like <strong>HAT-000001</strong>, that you paste at the end of any post. No lock-in. No fragile integrations. Just verifiable issuance provenance.
         </p>
         <div class="hero-actions">
-          <a class="btn" data-checkout="default">Get a token</a>
+          <a class="btn" href="#pricing">See founders access</a>
           <a class="btn btn-ghost" href="#verify">Verify token</a>
         </div>
         <div class="use-anywhere">
@@ -50,6 +50,7 @@
             <span>Forums</span>
           </div>
         </div>
+        <p class="mvp-note">MVP status: open verification is live. Public paid issuance is paused while we secure funding and finalize long-term payment/legal structure.</p>
       </div>
 
       <aside class="hero-panel reveal">
@@ -121,13 +122,13 @@
       <div class="grid three">
         <article class="card step-card">
           <span class="step-index">01</span>
-          <h3>Buy your token</h3>
-          <p>Payment triggers automatic issuance. Every order maps to one unique sequential HAT ID.</p>
+          <h3>Join the founders round</h3>
+          <p>Founders access is handled directly while we complete funding and payment infrastructure.</p>
         </article>
         <article class="card step-card">
           <span class="step-index">02</span>
-          <h3>Paste it anywhere</h3>
-          <p>Add your token to any post footer, thread reply, article, or newsletter issue.</p>
+          <h3>Publish with HAT format</h3>
+          <p>Add your HAT token to any post footer, thread reply, article, or newsletter issue.</p>
         </article>
         <article class="card step-card">
           <span class="step-index">03</span>
@@ -141,7 +142,8 @@
       <div class="section-header">
         <p class="eyebrow">Pricing</p>
         <h2>Own your number in the provenance ledger.</h2>
-        <p class="subtext">Lower IDs are scarce and culturally significant. Standard IDs stay accessible for broad adoption.</p>
+        <p class="subtext">Lower IDs are scarce and culturally significant. Standard IDs stay accessible for broad adoption once public checkout returns.</p>
+        <p class="funding-note">Funding checkpoint: only the founders tier is currently open for direct payments.</p>
       </div>
 
       <div class="grid pricing-grid">
@@ -170,7 +172,7 @@
             <li>Identity private by default</li>
             <li>Private log + public verification</li>
           </ul>
-          <a class="btn" data-checkout="elite">Get token</a>
+          <p class="tier-status">Currently paused in MVP. Waitlist opens after funding milestone.</p>
         </article>
 
         <article class="price-card tier-early">
@@ -182,7 +184,7 @@
             <li>Identity private by default</li>
             <li>Private log + public verification</li>
           </ul>
-          <a class="btn" data-checkout="early">Get token</a>
+          <p class="tier-status">Currently paused in MVP. Waitlist opens after funding milestone.</p>
         </article>
 
         <article class="price-card tier-mid">
@@ -194,11 +196,11 @@
             <li>Identity private by default</li>
             <li>Private log + public verification</li>
           </ul>
-          <a class="btn" data-checkout="mid">Get token</a>
+          <p class="tier-status">Currently paused in MVP. Waitlist opens after funding milestone.</p>
         </article>
 
         <article class="price-card wide tier-standard">
-          <div class="badge badge-soft">Updated</div>
+          <div class="badge badge-soft">MVP</div>
           <h3>HAT #101+</h3>
           <p class="price">EUR <span data-standard-price>3</span></p>
           <ul>
@@ -207,9 +209,25 @@
             <li>Identity private by default</li>
             <li>Private log + public verification</li>
           </ul>
-          <a class="btn" data-checkout="standard">Get token</a>
+          <p class="tier-status">Currently paused in MVP. Public self-checkout relaunches after funding.</p>
         </article>
       </div>
+    </section>
+
+    <section id="example" class="section usage reveal">
+      <div class="section-header">
+        <p class="eyebrow">Usage Example</p>
+        <h2>How HAT appears in real posts.</h2>
+        <p class="subtext">Readers should see both the token and a verification URL at the end of the post.</p>
+      </div>
+
+      <article class="usage-card">
+        <p class="usage-label">Example post ending</p>
+        <p class="usage-line">"...final paragraph of the post."</p>
+        <p class="usage-line"><code>HAT-000101</code></p>
+        <p class="usage-line">Verify: <a data-example-verify-url href="/api/verify?token=HAT-000101">/api/verify?token=HAT-000101</a></p>
+        <p class="usage-line">Manual verify form: <a href="#verify">Open on-site verifier</a></p>
+      </article>
     </section>
 
     <section id="verify" class="section verify reveal">
@@ -298,6 +316,6 @@
     <p class="footer-note">Digital provenance token. Not legal identity verification.</p>
   </footer>
 
-  <script src="app.js?v=12"></script>
+  <script src="app.js?v=13"></script>
 </body>
 </html>
