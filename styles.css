@@ -360,13 +360,6 @@ h1 {
   line-height: 1.7;
 }
 
-.funding-note {
-  margin-top: 12px;
-  max-width: 68ch;
-  color: var(--ink);
-  font-weight: 600;
-}
-
 .narrative {
   padding-top: 20px;
 }
@@ -571,16 +564,6 @@ h1 {
   font-size: 0.88rem;
   color: var(--ink-soft);
   line-height: 1.45;
-}
-
-.tier-status {
-  font-size: 0.9rem;
-  line-height: 1.55;
-  color: var(--ink-soft);
-  border: 1px dashed rgba(23, 22, 19, 0.24);
-  border-radius: 12px;
-  padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.6);
 }
 
 .tier-actions {
